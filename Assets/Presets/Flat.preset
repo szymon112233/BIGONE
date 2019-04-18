@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Flat
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: 46e5e94573a195c4b95999a402ed43a3,
+      type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: currentDrawMode
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: autoUpdate
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mapSize.x
+    value: 100
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mapSize.y
+    value: 100
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: noiseScale
+    value: 38.37
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: octaves
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: persistance
+    value: 0.395
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: lacunarity
+    value: 2.21
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: seed
+    value: 65
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: customOffset.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: customOffset.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tileSize.x
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tileSize.y
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: meshHeightMultiplier
+    value: 38.3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: noiseMapInput
+    value: 
+    objectReference: {fileID: 2800000, guid: 6f2692afe137d1342995431607e9258e, type: 3}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[0].name
+    value: Water
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[0].height
+    value: 0.3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[0].color.r
+    value: 0.051886797
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[0].color.g
+    value: 0.49193314
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[0].color.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[0].color.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[1].name
+    value: Sand
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[1].height
+    value: 0.4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[1].color.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[1].color.g
+    value: 0.8257158
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[1].color.b
+    value: 0.05098039
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[1].color.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[2].name
+    value: Land
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[2].height
+    value: 0.7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[2].color.r
+    value: 0.2590528
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[2].color.g
+    value: 0.6415094
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[2].color.b
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[2].color.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[3].name
+    value: Hills
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[3].height
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[3].color.r
+    value: 0.26415092
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[3].color.g
+    value: 0.2609443
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[3].color.b
+    value: 0.25542894
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: regions.Array.data[3].color.a
+    value: 0
+    objectReference: {fileID: 0}
