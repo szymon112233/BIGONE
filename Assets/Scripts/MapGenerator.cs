@@ -30,56 +30,30 @@ public class MapGenerator : MonoBehaviour
     {
         float[,] noiseMap = Noise.GenerateNoiseMap(mapSize, seed, noiseScale, octaves, persistance, lacunarity, customOffset);
 
-        Color[] colourMap = new Color[mapSize.x * mapSize.y];
-
-        for (int j = 0; j < mapSize.y; j++)
-        {
-            for (int i = 0; i < mapSize.x; i++)
-            {
-                float currentHeight = noiseMap[i, j];
-                for (int r = 0; r < regions.Length; r++)
-                {
-                    if (currentHeight <= regions[r].height)
-                    {
-                        colourMap[j * mapSize.x + i] = regions[r].color;
-                        break;
-                    }
-                }
-
-            }
-        }
-
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
         if (currentDrawMode == DrawMode.NoiseMap)
             mapDisplay.DrawMapFromNosieMap(noiseMap);
         else if (currentDrawMode == DrawMode.TerrainMap)
-            mapDisplay.DrawMapFromColorMap(colourMap, new Vector2Int(mapSize.x, mapSize.y));
+            mapDisplay.DrawMapFromTexture2D(MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
         else if (currentDrawMode == DrawMode.Mesh)
-            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, tileSize), colourMap, new Vector2Int(mapSize.x, mapSize.y));
+            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
     }
 
     public void GenerateMapFromTexture()
     {
         if (noiseMapInput == null)
             return;
-        autoUpdate = false;
-        Color[] colors = noiseMapInput.GetPixels();
-        for (int i = 0; i < colors.Length; i++)
+
+        float[,] noiseMap = new float[noiseMapInput.width, noiseMapInput.height];
+        for (int i = 0; i < noiseMapInput.width; i++)
         {
-            float currentHeight = colors[i].grayscale;
-            for (int r = 0; r < regions.Length; r++)
+            for (int j = 0; j < noiseMapInput.height; j++)
             {
-                if (currentHeight <= regions[r].height)
-                {
-                    colors[i] = regions[r].color;
-                    break;
-                }
+                noiseMap[i, j] = noiseMapInput.GetPixel(i, j).grayscale;
             }
         }
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
-        mapDisplay.DrawMapFromColorMap(colors, new Vector2Int(noiseMapInput.width, noiseMapInput.height));
-        mapDisplay.DrawMap();
-
+        mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
     }
 
     private void OnValidate()

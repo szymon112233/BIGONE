@@ -94,6 +94,7 @@ public class MeshData
     }
 }
 
+[System.Serializable]
 public struct ClickableTile
 {
     public int topLeft;

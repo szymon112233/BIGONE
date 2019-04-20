@@ -31,16 +31,19 @@ public class MapDisplay : MonoBehaviour
         DrawMapFromColorMap(colourMap, new Vector2Int(width, height));
     }
 
-    public void DrawMapFromColorMap(Color[] colorMap, Vector2Int textureSize)
+    public void DrawMapFromTexture2D(Texture2D texture, Vector2Int textureSize)
     {
-        mapTexture = new Texture2D(textureSize.x, textureSize.y);
-        mapTexture.SetPixels(colorMap);
-        mapTexture.filterMode = FilterMode.Point;
-        mapTexture.wrapMode = TextureWrapMode.Clamp;
-        mapTexture.Apply();
+        mapTexture = texture;
         DrawMap();
     }
-    public void DrawMesh(MeshData mesh, Color[] colorMap, Vector2Int textureSize)
+
+    public void DrawMapFromColorMap(Color[] colourMap, Vector2Int textureSize)
+    {
+        mapTexture = MapTexture.GenerateTextureFromColorMap(colourMap, textureSize);
+        DrawMap();
+    }
+
+    public void DrawMesh(MeshData mesh, Texture2D texture, Vector2Int textureSize)
     {
         tileFinder.meshData = mesh;
         meshFilter.sharedMesh = mesh.CreateMesh();
@@ -48,19 +51,23 @@ public class MapDisplay : MonoBehaviour
         collider.sharedMesh = null;
         collider.sharedMesh = meshFilter.sharedMesh;
 
-        mapTexture = new Texture2D(textureSize.x, textureSize.y);
-        mapTexture.SetPixels(colorMap);
-        mapTexture.filterMode = FilterMode.Point;
-        mapTexture.wrapMode = TextureWrapMode.Clamp;
-        mapTexture.Apply();
+        mapTexture = texture;
 
         meshRenderer.sharedMaterial.mainTexture = mapTexture;
 
         MapGenerator mapGen = FindObjectOfType<MapGenerator>();
         float waterLevel = mapGen.regions[0].height * mapGen.meshHeightMultiplier;
-        waterPlaneTransform.position = new Vector3(0, waterLevel, 0);  
+        waterPlaneTransform.position = new Vector3(0, waterLevel, 0);
     }
 
+    public void RedrawMesh(MeshData meshData)
+    {
+        tileFinder.meshData = meshData;
+        meshFilter.sharedMesh = meshData.CreateMesh();
+
+        collider.sharedMesh = null;
+        collider.sharedMesh = meshFilter.sharedMesh;
+    }
 
     public void DrawMap()
     {
