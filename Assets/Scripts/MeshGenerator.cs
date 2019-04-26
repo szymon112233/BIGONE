@@ -5,7 +5,7 @@ using UnityEngine;
 public static class MeshGenerator
 {
 
-    public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMultiplier, Vector2Int tileSize)
+    public static MeshData GenerateTerrainMesh(float[,] heightMap, AnimationCurve heightMultiplierCurve, Vector2Int tileSize)
     {
         if (tileSize.x < 1)
             tileSize.x = 1;
@@ -17,7 +17,7 @@ public static class MeshGenerator
         float topLeftX = (width * tileSize.x - 1) / -2f;
         float topLeftZ = (height * tileSize.y - 1) / 2f;
 
-        MeshData mesh = new MeshData(new Vector2Int(width, height));
+        MeshData mesh = new MeshData(new Vector2Int(width, height), heightMultiplierCurve);
         mesh.tileSize = tileSize;
         int vertexIndex = 0;
 
@@ -25,7 +25,7 @@ public static class MeshGenerator
         {
             for (int x = 0; x < width; x++)
             {
-                mesh.vertices[vertexIndex] = new Vector3(topLeftX + x * tileSize.x, heightMap[x, y] * heightMultiplier, topLeftZ - y* tileSize.y);
+                mesh.vertices[vertexIndex] = new Vector3(topLeftX + x * tileSize.x, heightMap[x, y] * heightMultiplierCurve.Evaluate(heightMap[x, y]), topLeftZ - y* tileSize.y);
                 mesh.uvs[vertexIndex] = new Vector2(x/(float)width, y/(float)height);
 
                 if (x < width -1 && y < height -1)
@@ -61,15 +61,19 @@ public class MeshData
     public Vector2[] uvs;
     public Dictionary<Vector2Int, ClickableTile>  tiles;
     public Vector2Int tileSize;
+    public AnimationCurve heightMultiplierCurve;
+    public Vector2Int meshSize;
 
     int triangleIndex;
 
-    public MeshData(Vector2Int meshSize)
+    public MeshData(Vector2Int meshSize, AnimationCurve heighMultiplierCurve)
     {
         this.vertices = new Vector3[meshSize.x * meshSize.y];
         this.triangles = new int[((meshSize.x -1) * (meshSize.y -1)) * 6];
         this.uvs = new Vector2[meshSize.x * meshSize.y];
         this.tiles = new Dictionary<Vector2Int, ClickableTile>();
+        this.heightMultiplierCurve = heighMultiplierCurve;
+        this.meshSize = meshSize;
     }
 
     public void AddTriangle(Vector3Int indices)

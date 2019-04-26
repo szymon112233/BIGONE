@@ -20,7 +20,7 @@ public class MapGenerator : MonoBehaviour
     public Vector2 customOffset;
     public Vector2Int tileSize;
 
-    public float meshHeightMultiplier;
+    public AnimationCurve meshHeightMultiplierCurve;
 
     public Texture2D noiseMapInput;
 
@@ -36,7 +36,7 @@ public class MapGenerator : MonoBehaviour
         else if (currentDrawMode == DrawMode.TerrainMap)
             mapDisplay.DrawMapFromTexture2D(MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
         else if (currentDrawMode == DrawMode.Mesh)
-            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
+            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
     }
 
     public void GenerateMapFromTexture()
@@ -53,7 +53,7 @@ public class MapGenerator : MonoBehaviour
             }
         }
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
-        mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
+        mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
     }
 
     private void OnValidate()
