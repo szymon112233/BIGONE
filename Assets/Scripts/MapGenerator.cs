@@ -7,8 +7,10 @@ public class MapGenerator : MonoBehaviour
     public enum DrawMode {NoiseMap, TerrainMap, Mesh};
     public DrawMode currentDrawMode;
 
+    public const int chunkSize = 241;
+    [Range(0, 6)]
+    public int levelOfDetail;
     public bool autoUpdate;
-    public Vector2Int mapSize;
     public float noiseScale;
 
     public int octaves;
@@ -28,15 +30,15 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapSize, seed, noiseScale, octaves, persistance, lacunarity, customOffset);
+        float[,] noiseMap = Noise.GenerateNoiseMap (new Vector2Int(chunkSize, chunkSize), seed, noiseScale, octaves, persistance, lacunarity, customOffset);
 
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
         if (currentDrawMode == DrawMode.NoiseMap)
             mapDisplay.DrawMapFromNosieMap(noiseMap);
         else if (currentDrawMode == DrawMode.TerrainMap)
-            mapDisplay.DrawMapFromTexture2D(MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
+            mapDisplay.DrawMapFromTexture2D(MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(chunkSize, chunkSize));
         else if (currentDrawMode == DrawMode.Mesh)
-            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
+            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize, levelOfDetail), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(chunkSize, chunkSize));
     }
 
     public void GenerateMapFromTexture()
@@ -53,15 +55,11 @@ public class MapGenerator : MonoBehaviour
             }
         }
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
-        mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(mapSize.x, mapSize.y));
+        mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize, levelOfDetail), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(chunkSize, chunkSize));
     }
 
     private void OnValidate()
     {
-        if (mapSize.x < 1)
-            mapSize.x = 1;
-        if (mapSize.y < 1)
-            mapSize.y = 1;
 
         if (lacunarity < 1)
             lacunarity = 1;
