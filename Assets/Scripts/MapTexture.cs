@@ -4,8 +4,16 @@ using UnityEngine;
 
 public static class MapTexture
 {
-    public static Texture2D GenerateTextureFromNoiseMap(float[,] noiseMap, TerrainType[] regions)
+    public static TerrainType[] regions;
+
+    public static Texture2D GenerateTextureFromNoiseMap(float[,] noiseMap, TerrainType[] regions = null)
     {
+        TerrainType[] currentRegions;
+        if (regions == null)
+            currentRegions = MapTexture.regions;
+        else
+            currentRegions = regions;
+
         Vector2Int mapSize = new Vector2Int(noiseMap.GetLength(0), noiseMap.GetLength(1));
 
         Color[] colourMap = new Color[mapSize.x * mapSize.y];
@@ -15,11 +23,11 @@ public static class MapTexture
             for (int i = 0; i < mapSize.x; i++)
             {
                 float currentHeight = noiseMap[i, j];
-                for (int r = 0; r < regions.Length; r++)
+                for (int r = 0; r < currentRegions.Length; r++)
                 {
-                    if (currentHeight <= regions[r].height)
+                    if (currentHeight <= currentRegions[r].height)
                     {
-                        colourMap[j * mapSize.x + i] = regions[r].color;
+                        colourMap[j * mapSize.x + i] = currentRegions[r].color;
                         break;
                     }
                 }
