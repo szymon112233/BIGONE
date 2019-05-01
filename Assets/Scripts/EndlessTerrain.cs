@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EndlessTerrain : MonoBehaviour
 {
+    const float scale = 1f;
+
     const float viewerMoveTresholdForChunkUpdate = 25;
     const float sqrViewerMoveTresholdForChunkUpdate = viewerMoveTresholdForChunkUpdate * viewerMoveTresholdForChunkUpdate;
 
@@ -25,7 +27,7 @@ public class EndlessTerrain : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        chunkSize = MapGenerator.chunkSize;
+        chunkSize = MapGenerator.chunkSize - 1;
 
         maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDstTreshold;
         chunksVisibleInView = Mathf.RoundToInt(maxViewDistance / chunkSize);
@@ -51,7 +53,7 @@ public class EndlessTerrain : MonoBehaviour
         {
             for (int xOffset = -chunksVisibleInView; xOffset <= chunksVisibleInView; xOffset++)
             {
-                Vector2 currentViewedChunkCoord = new Vector2(currentChunkCoordX + xOffset,currentChunkCoordY + yOffset); 
+                Vector2 currentViewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset); 
                 if (terrainChunkDictionary.ContainsKey(currentViewedChunkCoord))
                 {
                     terrainChunkDictionary[currentViewedChunkCoord].UpdateTerrainChunk();
@@ -67,7 +69,7 @@ public class EndlessTerrain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
+        viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / scale;
         //TODO: don't need to tick it every frame i think
         if ((viewerPositionOld - viewerPosition).sqrMagnitude > sqrViewerMoveTresholdForChunkUpdate)
         {
@@ -85,6 +87,7 @@ public class EndlessTerrain : MonoBehaviour
 
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
+        MeshCollider meshCollider;
 
         LODInfo[] detailLevels;
         LODMesh[] lodMeshes;
@@ -105,8 +108,13 @@ public class EndlessTerrain : MonoBehaviour
             meshRenderer = meshObejct.AddComponent<MeshRenderer>();
             meshRenderer.material = material;
             meshFilter = meshObejct.AddComponent<MeshFilter>();
-            meshObejct.transform.position = positionV3;
+            meshCollider = meshObejct.AddComponent<MeshCollider>();
+            meshCollider.sharedMesh = null;
+            meshCollider.sharedMesh = meshFilter.mesh;
+            meshObejct.layer = 9;
+            meshObejct.transform.position = positionV3 * scale;
             meshObejct.transform.parent = parent;
+            meshObejct.transform.localScale = Vector3.one * scale;
 
             SetVisible(false);
 
@@ -161,6 +169,13 @@ public class EndlessTerrain : MonoBehaviour
                         {
                             meshFilter.mesh = lodMesh.mesh;
                             prevLODIndex = lodIndex;
+
+                            if (lodIndex <= 1)
+                            {
+                                meshCollider.sharedMesh = null;
+                                meshCollider.sharedMesh = meshFilter.mesh;
+                            }
+                            
                         }
                         else if (!lodMesh.hasRequestedMesh)
                         {

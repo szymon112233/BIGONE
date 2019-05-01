@@ -25,9 +25,12 @@ public static class MapTexture
                 float currentHeight = noiseMap[i, j];
                 for (int r = 0; r < currentRegions.Length; r++)
                 {
-                    if (currentHeight <= currentRegions[r].height)
+                    if (currentHeight >= currentRegions[r].height)
                     {
                         colourMap[j * mapSize.x + i] = currentRegions[r].color;
+                    }
+                    else
+                    {
                         break;
                     }
                 }
