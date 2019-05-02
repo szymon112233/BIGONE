@@ -20,7 +20,7 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
   -executeMethod BuildCommand.PerformBuild \
   -logFile $(pwd)/log.xd
   
-cat $(pwd)/log.xd
+tail -n 300 $(pwd)/log.xd
 
 UNITY_EXIT_CODE=$?
 
