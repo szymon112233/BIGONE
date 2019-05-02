@@ -9,8 +9,10 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
   -runTests \
   -testPlatform $TEST_PLATFORM \
   -testResults $(pwd)/$TEST_PLATFORM-results.xml \
-  -logFile - \
+  -logFile $(pwd)/log.xd \
   -batchmode
+
+cat $(pwd)/log.xd
 
 UNITY_EXIT_CODE=$?
 
