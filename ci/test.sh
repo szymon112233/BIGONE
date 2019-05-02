@@ -12,7 +12,7 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
   -logFile $(pwd)/log.xd \
   -batchmode
 
-cat $(pwd)/log.xd
+tail -n 200 $(pwd)/log.xd
 
 UNITY_EXIT_CODE=$?
 
