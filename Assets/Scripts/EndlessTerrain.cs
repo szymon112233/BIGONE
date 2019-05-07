@@ -14,6 +14,7 @@ public class EndlessTerrain : MonoBehaviour
 
     public Transform viewer;
     public Material mapMaterial;
+    public bool generateCollision = false;
     int chunkSize;
     int chunksVisibleInView;
 
@@ -60,7 +61,7 @@ public class EndlessTerrain : MonoBehaviour
                 }
                 else
                 {
-                    terrainChunkDictionary.Add(currentViewedChunkCoord, new TerrainChunk(currentViewedChunkCoord, chunkSize, detailLevels, transform, mapMaterial));
+                    terrainChunkDictionary.Add(currentViewedChunkCoord, new TerrainChunk(currentViewedChunkCoord, chunkSize, detailLevels, transform, mapMaterial, generateCollision));
                 }
             }
         }
@@ -95,8 +96,9 @@ public class EndlessTerrain : MonoBehaviour
         float[,] noiseMap;
         bool noiseMapRecieved;
         int prevLODIndex = -1;
+        bool generateCollision;
 
-        public TerrainChunk(Vector2 coord, int size, LODInfo[] detailLevels, Transform parent, Material material)
+        public TerrainChunk(Vector2 coord, int size, LODInfo[] detailLevels, Transform parent, Material material, bool generateCollision = false)
         {
             this.detailLevels = detailLevels;
 
@@ -108,9 +110,14 @@ public class EndlessTerrain : MonoBehaviour
             meshRenderer = meshObejct.AddComponent<MeshRenderer>();
             meshRenderer.material = material;
             meshFilter = meshObejct.AddComponent<MeshFilter>();
-            meshCollider = meshObejct.AddComponent<MeshCollider>();
-            meshCollider.sharedMesh = null;
-            meshCollider.sharedMesh = meshFilter.mesh;
+            this.generateCollision = generateCollision;
+            if (generateCollision)
+            {
+                meshCollider = meshObejct.AddComponent<MeshCollider>();
+                meshCollider.sharedMesh = null;
+                meshCollider.sharedMesh = meshFilter.mesh;
+            }
+            
             meshObejct.layer = 9;
             meshObejct.transform.position = positionV3 * scale;
             meshObejct.transform.parent = parent;
@@ -170,7 +177,7 @@ public class EndlessTerrain : MonoBehaviour
                             meshFilter.mesh = lodMesh.mesh;
                             prevLODIndex = lodIndex;
 
-                            if (lodIndex <= 1)
+                            if (lodIndex <= 1 && generateCollision)
                             {
                                 meshCollider.sharedMesh = null;
                                 meshCollider.sharedMesh = meshFilter.mesh;
