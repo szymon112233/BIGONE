@@ -30,14 +30,18 @@ public class MapGenerator : MonoBehaviour
 
     public TerrainType[] regions;
 
+    public bool useFalloff;
+
     Queue<MapThreadInfo<float[,]>> noiseThreadInfoQueue = new Queue<MapThreadInfo<float[,]>>();
     Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
+
+    private float[,] falloffMap;
 
 
     private void Awake()
     {
-
         MapTexture.regions = regions;
+        falloffMap = FalloffGenerator.GenerateFalloffMap(chunkSize);
     }
 
     public void DrawMapInEditor()
@@ -117,6 +121,17 @@ public class MapGenerator : MonoBehaviour
     public float[,] GenerateNoiseMap()
     {
         float[,] noiseMap = Noise.GenerateNoiseMap (new Vector2Int(chunkSize, chunkSize), seed, noiseScale, octaves, persistance, lacunarity, customOffset);
+
+        if (useFalloff)
+        {
+            for (int i = 0; i < chunkSize; i++)
+            {
+                for (int j = 0; j < chunkSize; j++)
+                {
+                    noiseMap[i, j] = Mathf.Clamp(0, 1, noiseMap[i, j] - falloffMap[i, j]);
+                }
+            }
+        }
 
         return noiseMap;
     }

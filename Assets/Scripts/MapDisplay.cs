@@ -45,7 +45,6 @@ public class MapDisplay : MonoBehaviour
 
     public void DrawMesh(MeshData mesh, Texture2D texture, Vector2Int textureSize)
     {
-        tileFinder.meshData = mesh;
         meshFilter.sharedMesh = mesh.CreateMesh();
 
         collider.sharedMesh = null;
@@ -62,7 +61,6 @@ public class MapDisplay : MonoBehaviour
 
     public void RedrawMesh(MeshData meshData)
     {
-        tileFinder.meshData = meshData;
         meshFilter.sharedMesh = meshData.CreateMesh();
 
         collider.sharedMesh = null;
