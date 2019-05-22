@@ -99,8 +99,8 @@ public class TileFinder : MonoBehaviour
                 Vector3 additionalheight = new Vector3(0, 0.1f, 0);
 
 
-                lineRenderer.positionCount = 5;
-                Vector3[] positions = new Vector3[5];
+                lineRenderer.positionCount = 4;
+                Vector3[] positions = new Vector3[4];
                 positions[0] = reference_point + meshData.vertices[meshData.tiles[pos].topLeft] + additionalheight;
                 //Debug.LogFormat("positions[0]: {0}", positions[0]);
 
@@ -112,8 +112,6 @@ public class TileFinder : MonoBehaviour
 
                 positions[3] = reference_point + meshData.vertices[meshData.tiles[pos].bottomLeft] + additionalheight;
                 //Debug.LogFormat("positions[3]: {0}", positions[3]);
-
-                positions[4] = reference_point + meshData.vertices[meshData.tiles[pos].topLeft] + additionalheight;
 
                 lineRenderer.SetPositions(positions);
             }
