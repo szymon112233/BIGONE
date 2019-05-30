@@ -9,28 +9,18 @@ public class MapGenerator : MonoBehaviour
     public enum DrawMode {NoiseMap, TerrainMap, Mesh};
     public DrawMode currentDrawMode;
 
+    public TerrainData terrainData;
+    public NoiseData noiseData;
+
     public const int chunkSize = 241;
+    public bool autoUpdate;
     [Range(0, 6)]
     public int editorPreviewlevelOfDetail;
-    public bool autoUpdate;
-    public float noiseScale;
-
-    public int octaves;
-    [Range(0,1)]
-    public float persistance;
-    public float lacunarity;
-
-    public int seed;
-    public Vector2 customOffset;
-    public Vector2Int tileSize;
-
-    public AnimationCurve meshHeightMultiplierCurve;
 
     public Texture2D noiseMapInput;
 
     public TerrainType[] regions;
 
-    public bool useFalloff;
 
     Queue<MapThreadInfo<float[,]>> noiseThreadInfoQueue = new Queue<MapThreadInfo<float[,]>>();
     Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
@@ -44,6 +34,12 @@ public class MapGenerator : MonoBehaviour
         falloffMap = FalloffGenerator.GenerateFalloffMap(chunkSize);
     }
 
+    void OnValuesChanged ()
+    {
+        if (!Application.isPlaying)
+            DrawMapInEditor();
+    }
+
     public void DrawMapInEditor()
     {
         float[,] noiseMap = GenerateNoiseMap();
@@ -54,7 +50,7 @@ public class MapGenerator : MonoBehaviour
         else if (currentDrawMode == DrawMode.TerrainMap)
             mapDisplay.DrawMapFromTexture2D(MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(chunkSize, chunkSize));
         else if (currentDrawMode == DrawMode.Mesh)
-            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize, editorPreviewlevelOfDetail), 
+            mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, terrainData.meshHeightMultiplierCurve, terrainData.tileSize, editorPreviewlevelOfDetail), 
                 MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), 
                 new Vector2Int(chunkSize, chunkSize));
     }
@@ -71,7 +67,8 @@ public class MapGenerator : MonoBehaviour
 
     void NosieThread(Vector2 center, Action<float[,]> callback)
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(new Vector2Int(chunkSize, chunkSize), seed, noiseScale, octaves, persistance, lacunarity, center + customOffset);
+        float[,] noiseMap = Noise.GenerateNoiseMap(new Vector2Int(chunkSize, chunkSize), noiseData.seed, noiseData.noiseScale,
+            noiseData.octaves, noiseData.persistance, noiseData.lacunarity, center + noiseData.customOffset);
         lock (noiseThreadInfoQueue)
         {
             noiseThreadInfoQueue.Enqueue(new MapThreadInfo<float[,]>(callback, noiseMap));
@@ -90,7 +87,7 @@ public class MapGenerator : MonoBehaviour
 
     void MeshDataThread(float[,] nosieMape, int lod, Action<MeshData> callback)
     {
-        MeshData meshData = MeshGenerator.GenerateTerrainMesh(nosieMape, meshHeightMultiplierCurve, new Vector2Int(1,1), lod);
+        MeshData meshData = MeshGenerator.GenerateTerrainMesh(nosieMape, terrainData.meshHeightMultiplierCurve, new Vector2Int(1,1), lod);
         lock (meshDataThreadInfoQueue)
         {
             meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
@@ -120,15 +117,16 @@ public class MapGenerator : MonoBehaviour
 
     public float[,] GenerateNoiseMap()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap (new Vector2Int(chunkSize, chunkSize), seed, noiseScale, octaves, persistance, lacunarity, customOffset);
+        float[,] noiseMap = Noise.GenerateNoiseMap (new Vector2Int(chunkSize, chunkSize), noiseData.seed, noiseData.noiseScale,
+            noiseData.octaves, noiseData.persistance, noiseData.lacunarity, noiseData.customOffset);
 
-        if (useFalloff)
+        if (terrainData.useFalloff)
         {
             for (int i = 0; i < chunkSize; i++)
             {
                 for (int j = 0; j < chunkSize; j++)
                 {
-                    noiseMap[i, j] = Mathf.Clamp(0, 1, noiseMap[i, j] - falloffMap[i, j]);
+                    noiseMap[i, j] = Mathf.Clamp(0, 1, noiseMap[i, j] - falloffMap[i, j]) ;
                 }
             }
         }
@@ -150,16 +148,23 @@ public class MapGenerator : MonoBehaviour
             }
         }
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
-        mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplierCurve, tileSize, editorPreviewlevelOfDetail), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(chunkSize, chunkSize));
+        mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, terrainData.meshHeightMultiplierCurve, terrainData.tileSize, editorPreviewlevelOfDetail), MapTexture.GenerateTextureFromNoiseMap(noiseMap, regions), new Vector2Int(chunkSize, chunkSize));
     }
+
 
     private void OnValidate()
     {
+        if (terrainData != null)
+        {
+            terrainData.OnValuesChanged -= OnValuesChanged;
+            terrainData.OnValuesChanged += OnValuesChanged;
+        }
+        if (noiseData != null)
+        {
+            noiseData.OnValuesChanged -= OnValuesChanged;
+            noiseData.OnValuesChanged += OnValuesChanged;
+        }
 
-        if (lacunarity < 1)
-            lacunarity = 1;
-        if (octaves < 0)
-            octaves = 0;
     }
 
     struct MapThreadInfo<T>

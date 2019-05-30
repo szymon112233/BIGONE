@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class EndlessTerrain : MonoBehaviour
 {
-    const float scale = 1f;
 
     const float viewerMoveTresholdForChunkUpdate = 25;
     const float sqrViewerMoveTresholdForChunkUpdate = viewerMoveTresholdForChunkUpdate * viewerMoveTresholdForChunkUpdate;
 
     public static float maxViewDistance = 512;
     public LODInfo[] detailLevels;
+
 
     public Transform viewer;
     public Material mapMaterial;
@@ -70,7 +70,7 @@ public class EndlessTerrain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / scale;
+        viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / mapGenerator.terrainData.uniformScale;
         //TODO: don't need to tick it every frame i think
         if ((viewerPositionOld - viewerPosition).sqrMagnitude > sqrViewerMoveTresholdForChunkUpdate)
         {
@@ -116,9 +116,9 @@ public class EndlessTerrain : MonoBehaviour
 
             
             meshObejct.layer = 9;
-            meshObejct.transform.position = positionV3 * scale;
+            meshObejct.transform.position = positionV3 * mapGenerator.terrainData.uniformScale;
             meshObejct.transform.parent = parent;
-            meshObejct.transform.localScale = Vector3.one * scale;
+            meshObejct.transform.localScale = Vector3.one * mapGenerator.terrainData.uniformScale;
 
             SetVisible(false);
 

@@ -55,7 +55,7 @@ public class MapDisplay : MonoBehaviour
         meshRenderer.sharedMaterial.mainTexture = mapTexture;
 
         MapGenerator mapGen = FindObjectOfType<MapGenerator>();
-        float waterLevel = mapGen.regions[0].height * mapGen.meshHeightMultiplierCurve.Evaluate(mapGen.regions[0].height);
+        float waterLevel = mapGen.regions[0].height * mapGen.terrainData.meshHeightMultiplierCurve.Evaluate(mapGen.regions[0].height);
         waterPlaneTransform.position = new Vector3(0, waterLevel, 0);
     }
 
