@@ -106,11 +106,11 @@ public class BuildingCrosshairHelper : MonoBehaviour
 
         if (buildable)
         {
-            buildingElementPreviewMeshRenderer.material = buildableMaterial;
+            buildingElementPreviewMeshRenderer.material.SetInt("_isBuildable", 1);
         }
         else
         {
-            buildingElementPreviewMeshRenderer.material = unbuildableMaterial;
+            buildingElementPreviewMeshRenderer.material.SetInt("_isBuildable", 0);
         }
     }
 
