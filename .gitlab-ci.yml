@@ -1,4 +1,4 @@
-image: "gableroux/unity3d:2019.1.0f2"
+image: "gableroux/unity3d:2019.1.4f1"
 
 stages:
 - test
@@ -67,19 +67,22 @@ build-StandaloneWindows64:
   variables:
     BUILD_TARGET: StandaloneWindows64
 
-#build-WebGL:
-#  <<: *build
-#  variables:
-#    BUILD_TARGET: WebGL
+build-WebGL:
+  <<: *build
+  variables:
+    BUILD_TARGET: WebGL
+  after_script:
+    - mv ./Builds/WebGL/$BUILD_NAME ./Builds/
+    - rm -rf ./Builds/WebGL
+    - mv ./Builds/$BUILD_NAME/ ./Builds/WebGL/
 
-#pages:
-#  image: alpine:latest
-#  stage: deploy
-#  script:
-#  - mv ./Builds/WebGL public
-#  artifacts:
-#    paths:
-#    - public
-#  only:
-#  - master
-
+pages:
+  image: alpine:latest
+  stage: deploy
+  script:
+  - mv ./Builds/WebGL public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
