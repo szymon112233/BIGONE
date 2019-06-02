@@ -67,19 +67,19 @@ build-StandaloneWindows64:
   variables:
     BUILD_TARGET: StandaloneWindows64
 
-build-WebGL:
-  <<: *build
-  variables:
-    BUILD_TARGET: WebGL
+#build-WebGL:
+#  <<: *build
+#  variables:
+#    BUILD_TARGET: WebGL
 
-pages:
-  image: alpine:latest
-  stage: deploy
-  script:
-  - mv ./Builds/WebGL public
-  artifacts:
-    paths:
-    - public
-  only:
-  - master
+#pages:
+#  image: alpine:latest
+#  stage: deploy
+#  script:
+#  - mv ./Builds/WebGL public
+#  artifacts:
+#    paths:
+#    - public
+#  only:
+#  - master
 
