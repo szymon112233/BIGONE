@@ -10,6 +10,7 @@ public class BuildingCrosshairHelper : MonoBehaviour
 
     public GameObject buildingElementPreview;
 
+    ColliderUtilityWrapper buildingElementPreviewCollider;
     MeshFilter buildingElementPreviewMeshFilter;
     MeshRenderer buildingElementPreviewMeshRenderer;
 
@@ -35,10 +36,12 @@ public class BuildingCrosshairHelper : MonoBehaviour
     {
         buildingElementPreviewMeshFilter = buildingElementPreview.GetComponent<MeshFilter>();
         buildingElementPreviewMeshRenderer = buildingElementPreview.GetComponent<MeshRenderer>();
+        buildingElementPreviewCollider = buildingElementPreview.GetComponent<ColliderUtilityWrapper>();
         ElementsNearby = new List<StaticBuildingElement>();
 
         buildingElementPreviewMeshFilter.mesh = bulidingElementsPrefabs[currentElementPrefab].GetComponent<MeshFilter>().sharedMesh;
         buildingElementPreview.transform.localScale = bulidingElementsPrefabs[currentElementPrefab].transform.localScale;
+        buildingElementPreview.GetComponent<BoxCollider>().size = transform.localScale - new Vector3(0.05f, 0.05f, 0.05f);
     }
 
     private void FixedUpdate()
@@ -51,14 +54,15 @@ public class BuildingCrosshairHelper : MonoBehaviour
             for (int i = 1; i < ElementsNearby.Count; i++)
             {
                 //closestElement.transform.InverseTransformPoint(transform.position)
-                float distance = ElementsNearby[i].bounds.SqrDistance(ElementsNearby[i].transform.InverseTransformPoint(transform.position) * (int)closestElement.size);
+                float distance = ElementsNearby[i].bounds.SqrDistance(ElementsNearby[i].transform.InverseTransformPoint(transform.position) * (int)ElementsNearby[i].size);
                 if (closestElementDistance >= distance)
                 {
+                    Debug.LogFormat("Replacing distance {0} with {1} since it's closer.", closestElementDistance, distance);
                     closestElementDistance = distance;
                     closestElement = ElementsNearby[i];
                 }
             }
-            //Debug.Log(closestElement.gameObject.name);
+            Debug.Log(closestElement.gameObject.name);
             Vector3 closestPoint = closestElement.bounds.ClosestPoint(closestElement.transform.InverseTransformPoint(transform.position) * (int)closestElement.size);
             //Debug.Log(closestElementDistance.ToString());
             Vector3 snapPoint = new Vector3();
@@ -140,22 +144,16 @@ public class BuildingCrosshairHelper : MonoBehaviour
                 snapPoint += new Vector3(finalMovePositionX, 0, 0);
             }
 
-            //Watch out for the floats' precision
-            buildable = true;
-            for (int i = 0; i < ElementsNearby.Count; i++)
-            {
-                if (snapPoint == ElementsNearby[i].position)
-                {
-                    buildable = false;
-                    break;
-                }
-            }
-            if (buildable)
-                buildingElementPreview.transform.position = snapPoint;
-            else
-            {
-                buildingElementPreview.transform.position = Vector3.zero;
-            }
+            buildable = !buildingElementPreviewCollider.IsColliding();
+
+
+            buildingElementPreview.transform.position = snapPoint;
+            //if (buildable)
+            //    buildingElementPreview.transform.position = snapPoint;
+            //else
+            //{
+            //    buildingElementPreview.transform.position = Vector3.zero;
+            //}
         }
         else
         {
@@ -195,6 +193,7 @@ public class BuildingCrosshairHelper : MonoBehaviour
             buildingElementPreviewMeshFilter.mesh = bulidingElementsPrefabs[currentElementPrefab].GetComponent<MeshFilter>().sharedMesh;
             buildingElementPreviewMeshRenderer.material.mainTexture = bulidingElementsPrefabs[currentElementPrefab].GetComponent<MeshRenderer>().sharedMaterial.mainTexture;
             buildingElementPreview.transform.localScale = bulidingElementsPrefabs[currentElementPrefab].transform.localScale;
+            buildingElementPreview.GetComponent<BoxCollider>().size = transform.localScale - new Vector3(0.05f, 0.05f, 0.05f);
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -204,6 +203,7 @@ public class BuildingCrosshairHelper : MonoBehaviour
             buildingElementPreviewMeshFilter.mesh = bulidingElementsPrefabs[currentElementPrefab].GetComponent<MeshFilter>().sharedMesh;
             buildingElementPreviewMeshRenderer.material.mainTexture = bulidingElementsPrefabs[currentElementPrefab].GetComponent<MeshRenderer>().sharedMaterial.mainTexture;
             buildingElementPreview.transform.localScale = bulidingElementsPrefabs[currentElementPrefab].transform.localScale;
+            buildingElementPreview.GetComponent<BoxCollider>().size = transform.localScale - new Vector3(0.05f, 0.05f, 0.05f);
         }
     }
     private void OnTriggerEnter(Collider other)
