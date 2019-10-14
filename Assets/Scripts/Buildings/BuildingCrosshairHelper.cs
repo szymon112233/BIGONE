@@ -34,8 +34,8 @@ public class BuildingCrosshairHelper : MonoBehaviour
 
     private void Awake()
     {
-        buildingElementPreviewMeshFilter = buildingElementPreview.GetComponent<MeshFilter>();
-        buildingElementPreviewMeshRenderer = buildingElementPreview.GetComponent<MeshRenderer>();
+        buildingElementPreviewMeshFilter = buildingElementPreview.GetComponentInChildren<MeshFilter>();
+        buildingElementPreviewMeshRenderer = buildingElementPreview.GetComponentInChildren<MeshRenderer>();
         buildingElementPreviewCollider = buildingElementPreview.GetComponent<ColliderUtilityWrapper>();
         ElementsNearby = new List<StaticBuildingElement>();
 
