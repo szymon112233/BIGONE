@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class BuildingCrosshairHelper : MonoBehaviour
 {
+    //References
     public Material buildableMaterial;
     public Material unbuildableMaterial;
     public GameObject[] bulidingElementsPrefabs;
 
+    public bool isBuildMode;
+
     public GameObject buildingElementPreview;
+    public Vector3 InivisiblePosition;//A place where player cannot see things
 
     ColliderUtilityWrapper buildingElementPreviewCollider;
     MeshFilter buildingElementPreviewMeshFilter;
     MeshRenderer buildingElementPreviewMeshRenderer;
-
 
     bool isOtherBuildingPartNearby
     {
@@ -46,6 +49,33 @@ public class BuildingCrosshairHelper : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isBuildMode)
+        {
+            CalculatePreviewPosition();
+
+            ChangePreviewColor();
+        }
+        else
+        {
+            buildingElementPreview.transform.position = InivisiblePosition;
+        }
+        
+    }
+
+    void ChangePreviewColor()
+    {
+        if (buildable)
+        {
+            buildingElementPreviewMeshRenderer.material.SetInt("_isBuildable", 1);
+        }
+        else
+        {
+            buildingElementPreviewMeshRenderer.material.SetInt("_isBuildable", 0);
+        }
+    }
+
+    void CalculatePreviewPosition()
+    {
         if (isOtherBuildingPartNearby)
         {
             StaticBuildingElement closestElement = ElementsNearby[0];
@@ -67,15 +97,15 @@ public class BuildingCrosshairHelper : MonoBehaviour
             //Debug.Log(closestElementDistance.ToString());
             Vector3 snapPoint = new Vector3();
             int buildElementSize = (int)bulidingElementsPrefabs[currentElementPrefab].GetComponent<StaticBuildingElement>().size;
-            if (closestPoint.x > 0 && closestPoint.x >  Mathf.Abs(closestPoint.z))
+            if (closestPoint.x > 0 && closestPoint.x > Mathf.Abs(closestPoint.z))
             {
                 //Set position to the center of closest element
                 snapPoint = closestElement.position;
                 //Move it to the edge
-                snapPoint += new Vector3((int)closestElement.size/2, 0, 0);
+                snapPoint += new Vector3((int)closestElement.size / 2, 0, 0);
                 //Move it so that they only share one wall
-                snapPoint += new Vector3(buildElementSize/2, 0, 0);
-                
+                snapPoint += new Vector3(buildElementSize / 2, 0, 0);
+
                 //Calculate which "slot" is closest       
                 float closestPointPositionZ = closestPoint.z;
                 closestPointPositionZ += (int)closestElement.size / 2;
@@ -160,23 +190,19 @@ public class BuildingCrosshairHelper : MonoBehaviour
             buildingElementPreview.transform.position = transform.position;
             buildable = true;
         }
-
-
-        if (buildable)
-        {
-            buildingElementPreviewMeshRenderer.material.SetInt("_isBuildable", 1);
-        }
-        else
-        {
-            buildingElementPreviewMeshRenderer.material.SetInt("_isBuildable", 0);
-        }
     }
 
     private void Update()
     {
+        if (isBuildMode)
+            CheckInput();
+    }
+
+    void CheckInput()
+    {
         if (Input.GetButtonDown("Place") && buildable)
         {
-            GameObject go =  Instantiate(bulidingElementsPrefabs[currentElementPrefab], buildingElementPreview.transform.position, Quaternion.identity);
+            GameObject go = Instantiate(bulidingElementsPrefabs[currentElementPrefab], buildingElementPreview.transform.position, Quaternion.identity);
             go.name = string.Format("{0}_{1}", go.name, buildingsPlaced);
             buildingsPlaced++;
             StaticBuildingElement element = go.GetComponent<StaticBuildingElement>();
@@ -206,6 +232,7 @@ public class BuildingCrosshairHelper : MonoBehaviour
             buildingElementPreview.GetComponent<BoxCollider>().size = transform.localScale - new Vector3(0.05f, 0.05f, 0.05f);
         }
     }
+
     private void OnTriggerEnter(Collider other)
     {
         ElementsNearby.Add(other.GetComponent<StaticBuildingElement>());

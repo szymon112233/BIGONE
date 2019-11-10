@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1fc94c5ddc01be4b8c733d1bfc75cba, type: 3}
   m_Name: Default Terrain Data
   m_EditorClassIdentifier: 
+  autoUpdate: 0
   uniformScale: 1
   meshHeightMultiplier: 5
   meshHeightMultiplierCurve:
@@ -36,8 +37,8 @@ MonoBehaviour:
       inWeight: 0.2367242
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1.0000088
-      value: 18.412699
+      time: 1.0024607
+      value: 5.5405784
       inSlope: 0
       outSlope: 0
       tangentMode: 0

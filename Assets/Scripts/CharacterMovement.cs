@@ -9,8 +9,10 @@ public class CharacterMovement : MonoBehaviour
     public float jumpSpeed = 1.0f;
     public float airMultiplier = 0.1f;
     public float maxMovementSpeed = 1.0f;
+    public float maxAirSpeed = 1.0f;
     public float maxFallingSpeed = 1.0f;
     public float movementDamping = 1.0f;
+    public float movementDampingInAir = 1.0f;
 
     CharacterController characterController;
 
@@ -65,11 +67,11 @@ public class CharacterMovement : MonoBehaviour
         {
             characterAnimator.SetBool("Grounded", false);
 
-            Vector3 dumping = velocity.normalized * -1 * movementDamping * Time.deltaTime;
+            Vector3 dumping = velocity.normalized * -1 * movementDampingInAir * Time.deltaTime;
             velocity += dumping;
 
-            //move *= airMultiplier;
-            //characterController.Move(move * Time.deltaTime);
+            move *= airMultiplier;
+            characterController.Move(move * Time.deltaTime);
 
             airVelocity.y += Physics.gravity.y * Time.deltaTime;
 
@@ -139,52 +141,58 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    void UpdateMovement()
+    void UpdateMovementFinal()
     {
+        float input_vertical = Input.GetAxis("Vertical");
+        float input_horizontal = Input.GetAxis("Horizontal");
         Vector3 move = transform.forward;
+        move *= input_vertical;
+        move += transform.right * input_horizontal;
+        move = move.normalized * movementSpeed;
 
         if (characterController.isGrounded)
         {
-            move *= Input.GetAxis("Vertical") * movementSpeed;
-            move += transform.right * Input.GetAxis("Horizontal") * movementSpeed;
+            characterAnimator.SetBool("Grounded", true);
 
-            velocity.y = 0;
+            if (move.sqrMagnitude != 0)//Is input
+            {
+                velocity += move;
+            }
+            else if (velocity.sqrMagnitude > maxMovementSpeed * 0.2f)
+            {
+                Vector3 dumping = velocity.normalized * -1 * movementDamping;
+                velocity += dumping;
+            }
+            else
+            {
+                velocity = Vector3.zero;
+            }
+
+            characterAnimator.SetBool("Moving", velocity.sqrMagnitude != 0);
 
             if (Input.GetButtonDown("Jump"))
             {
-                move.y = jumpSpeed;
+                characterAnimator.SetTrigger("JumpTrigger");
+                characterAnimator.SetBool("Grounded", false);
+                airVelocity.y = jumpSpeed;
             }
-
-            velocity += move;
         }
         else
         {
-            velocity.y += Physics.gravity.y * Time.deltaTime;
+            characterAnimator.SetBool("Grounded", false);
+
+            Vector3 dumping = velocity.normalized * -1 * movementDampingInAir;
+            velocity += dumping;
+
+            move *= airMultiplier;
+            characterController.Move(move * Time.deltaTime);
+
+            airVelocity.y += Physics.gravity.y * Time.deltaTime;
+
         }
 
-        Vector3 damping = Vector3.zero;
-        if (Mathf.Abs(velocity.x) > movementDamping)
-            damping.x = Mathf.Sign(velocity.x) * movementDamping;
-        else
-            velocity.x = 0.0f;
 
-        if (Mathf.Abs(velocity.z) > movementDamping)
-            damping.z = Mathf.Sign(velocity.z) * movementDamping;
-        else
-            velocity.z = 0.0f;
-
-        velocity -= damping;
-
-        float ySpeed = velocity.y;
-        velocity.y = 0;
-        float magnitude = Mathf.Clamp(velocity.magnitude, -maxMovementSpeed, maxMovementSpeed);
-        velocity = velocity.normalized * magnitude;
-        velocity.y = ySpeed;
-
-        velocity.y = Mathf.Clamp(velocity.y, -maxFallingSpeed, maxFallingSpeed);
-
-        characterController.Move(velocity * Time.deltaTime);
-
+        //Handle the rotation by mouse
         if (!Input.GetButton("LockMouse"))
         {
             Cursor.lockState = CursorLockMode.Locked;
@@ -196,7 +204,15 @@ public class CharacterMovement : MonoBehaviour
             if (Cursor.lockState != CursorLockMode.None)
                 Cursor.lockState = CursorLockMode.None;
         }
-        
 
+        velocity = velocity.normalized * Mathf.Min(velocity.magnitude, maxMovementSpeed);
+        //velocity = transform.forward * velocity.magnitude;
+
+        characterController.Move(velocity * Time.deltaTime);
+        characterController.Move(airVelocity * Time.deltaTime);
+
+
+
+        
     }
 }

@@ -7,6 +7,7 @@ public class TileFinder : MonoBehaviour
     public EndlessTerrain endlessTerrain;
     public LineRenderer lineRenderer;
     public int brushSize;
+    public bool isTileChoiceMode;
 
     ClickableTile currentTile;
     Vector2Int lastPos;
@@ -18,7 +19,11 @@ public class TileFinder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        FindAndSelectTiles();
+        if (isTileChoiceMode)
+        {
+            FindAndSelectTiles();
+        }
+        
     }
 
     private void Update()
@@ -68,9 +73,6 @@ public class TileFinder : MonoBehaviour
         {
             int chunkSize = MapGenerator.chunkSize - 1;
 
-            //Manual calculation
-            //Vector2 chunkCoords = new Vector2(Mathf.RoundToInt(hit.point.x/ chunkSize), Mathf.RoundToInt(hit.point.z/ chunkSize));
-
             Vector3 reference_point = hit.collider.gameObject.transform.position;
             Vector2 chunkCoords = new Vector2((int)reference_point.x / chunkSize, (int)reference_point.z / chunkSize);
             //Debug.LogFormat("Chunk: [{0}|{1}] ", chunkCoords.x, chunkCoords.y);
@@ -79,7 +81,7 @@ public class TileFinder : MonoBehaviour
                 return;
             transform.position = hit.point;
 
-            Vector2Int pos = new Vector2Int(); // o tu corner case co jeźeli point.x = -0.11 to samo co x = 0.11
+            Vector2Int pos = new Vector2Int(); // corner case: what if point.x = -0.11 is a sam as x = 0.11
             pos.x = (int)hit.point.x - (int)chunkCoords.x * chunkSize;
             pos.y = (int)hit.point.z - (int)chunkCoords.y * chunkSize;
 
