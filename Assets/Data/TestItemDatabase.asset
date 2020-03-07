@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92d4c9cfb07de6f40a583153559a0aff, type: 3}
+  m_Name: TestItemDatabase
+  m_EditorClassIdentifier: 
+  items:
+  - name: Apple
+    id: 0
+    texture: {fileID: 2800000, guid: 5d9ba4e7d0964044ea54abe409d81dfd, type: 3}
+    size: {x: 1, y: 1}
+  - name: Axe
+    id: 1
+    texture: {fileID: 2800000, guid: 172774604c1bee84185a69041576525b, type: 3}
+    size: {x: 2, y: 2}
+  - name: Chest
+    id: 2
+    texture: {fileID: 2800000, guid: fe025e83f69d0b54f8a4fe3c7c128fd7, type: 3}
+    size: {x: 3, y: 2}
+  - name: Armor
+    id: 3
+    texture: {fileID: 2800000, guid: 2f1eaeeaad36ee5469eff7ff158f37ba, type: 3}
+    size: {x: 2, y: 3}
+  - name: Stick
+    id: 4
+    texture: {fileID: 2800000, guid: db427fab3e94daf4caa704d9314a77a1, type: 3}
+    size: {x: 3, y: 1}

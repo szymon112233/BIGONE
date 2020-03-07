@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class GenericInvItem 
 {
     public string name;
     public int id;
+    public Texture texture;
+    public Vector2Int size = new Vector2Int(1, 1);
 }
