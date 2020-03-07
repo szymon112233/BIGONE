@@ -56,7 +56,7 @@ public class GenericInventory : MonoBehaviour, IDropHandler
         }
     }
 
-    bool AddItem(ItemInvEntry item)
+    public bool AddItem(ItemInvEntry item)
     {
         Debug.LogFormat("Trying to add a new item to inventory at:({0},{1}), size:({2},{3})",
             item.position.x, 
@@ -69,7 +69,8 @@ public class GenericInventory : MonoBehaviour, IDropHandler
             RectTransform itemRectTransform = item.UIgameObject.GetComponent<RectTransform>();
             itemRectTransform.parent = gameObject.transform;
             itemRectTransform.anchoredPosition = new Vector2(item.position.x * 75, item.position.y * -75);
-            itemRectTransform.sizeDelta = new Vector2(item.itemData.size.x * 75, item.itemData.size.y * 75);
+            item.UIgameObject.GetComponent<InvItemUIButton>().OnPickup += RemoveItem;
+            item.UIgameObject.GetComponent<InvItemUIButton>().currentInv = this;
             MarkSlotsOccupied(item.position, item.itemData.size);
             items.Add(item);
             return true;
@@ -77,20 +78,29 @@ public class GenericInventory : MonoBehaviour, IDropHandler
         return false;
     }
 
+    void RemoveItem(ItemInvEntry item)
+    {
+        if (items.Contains(item))
+        {
+            items.Remove(item);
+            MarkSlotsOccupied(item.position, item.itemData.size, false);
+            item.UIgameObject.GetComponent<InvItemUIButton>().OnPickup -= RemoveItem;
+
+        }
+    }
+
     public void AddRandomItem()
     {
-        GenericInvItem itemData = new GenericInvItem();
-        itemData.size = new Vector2Int(Random.Range(1, 4), Random.Range(1, 4));
+        GenericInvItem itemData = Globals.Instance.itemDatabase.items[Random.Range(0, Globals.Instance.itemDatabase.items.Count)];
         ItemInvEntry item = new ItemInvEntry();
         item.itemData = itemData;
         item.position = new Vector2Int(Random.Range(0, 8), Random.Range(0, 8));
 
         item.UIgameObject = Instantiate(itemGraphicsPrefab, graphicsParent);
         item.UIgameObject.GetComponent<InvItemUIButton>().myEntry = item;
+        item.UIgameObject.GetComponent<InvItemUIButton>().UpdateUI();
         if (!AddItem(item))
             Destroy(item.UIgameObject);
-
-
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -100,7 +110,12 @@ public class GenericInventory : MonoBehaviour, IDropHandler
         RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), eventData.position, null, out localPoint);
         Vector2Int desiredSlot = new Vector2Int((int)localPoint.x/ 75, -(int)localPoint.y/ 75);
         Debug.LogFormat("On Drop: {0}, {1}, {2}, {3}", eventData.pointerDrag, eventData.position, localPoint, desiredSlot);
+        Vector2Int lastPos = itemEntry.position;
         itemEntry.position = desiredSlot;
-        AddItem(itemEntry);
+        if (!AddItem(itemEntry))
+        {
+            itemEntry.position = lastPos;
+            eventData.pointerDrag.GetComponent<InvItemUIButton>().currentInv.AddItem(itemEntry);
+        }
     }
 }

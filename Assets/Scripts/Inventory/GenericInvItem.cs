@@ -7,6 +7,6 @@ public class GenericInvItem
 {
     public string name;
     public int id;
-    public Texture texture;
+    public Sprite sprite;
     public Vector2Int size = new Vector2Int(1, 1);
 }

@@ -15,21 +15,41 @@ MonoBehaviour:
   items:
   - name: Apple
     id: 0
-    texture: {fileID: 2800000, guid: 5d9ba4e7d0964044ea54abe409d81dfd, type: 3}
+    sprite: {fileID: 21300000, guid: 5d9ba4e7d0964044ea54abe409d81dfd, type: 3}
     size: {x: 1, y: 1}
   - name: Axe
     id: 1
-    texture: {fileID: 2800000, guid: 172774604c1bee84185a69041576525b, type: 3}
+    sprite: {fileID: 21300000, guid: 172774604c1bee84185a69041576525b, type: 3}
     size: {x: 2, y: 2}
   - name: Chest
     id: 2
-    texture: {fileID: 2800000, guid: fe025e83f69d0b54f8a4fe3c7c128fd7, type: 3}
+    sprite: {fileID: 21300000, guid: fe025e83f69d0b54f8a4fe3c7c128fd7, type: 3}
     size: {x: 3, y: 2}
   - name: Armor
     id: 3
-    texture: {fileID: 2800000, guid: 2f1eaeeaad36ee5469eff7ff158f37ba, type: 3}
+    sprite: {fileID: 21300000, guid: 2f1eaeeaad36ee5469eff7ff158f37ba, type: 3}
     size: {x: 2, y: 3}
   - name: Stick
     id: 4
-    texture: {fileID: 2800000, guid: db427fab3e94daf4caa704d9314a77a1, type: 3}
+    sprite: {fileID: 21300000, guid: db427fab3e94daf4caa704d9314a77a1, type: 3}
     size: {x: 3, y: 1}
+  - name: Bow
+    id: 5
+    sprite: {fileID: 21300000, guid: 5d7061fc7da05ce44add317708ec7215, type: 3}
+    size: {x: 1, y: 3}
+  - name: Coins
+    id: 6
+    sprite: {fileID: 21300000, guid: 3676a0b185daeb54fb257f700ba7ead4, type: 3}
+    size: {x: 1, y: 1}
+  - name: Belt
+    id: 7
+    sprite: {fileID: 21300000, guid: da09804303305f542a686824630e7269, type: 3}
+    size: {x: 2, y: 1}
+  - name: Helmet
+    id: 8
+    sprite: {fileID: 21300000, guid: fd6e4fc32c78509458fc45ea4a478ba8, type: 3}
+    size: {x: 2, y: 2}
+  - name: Potion
+    id: 9
+    sprite: {fileID: 21300000, guid: e52ea25af699fd445b7046374f81a5b9, type: 3}
+    size: {x: 1, y: 1}
