@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class ItemInvEntry
@@ -13,13 +14,17 @@ public class ItemInvEntry
     public GameObject UIgameObject;
 }
 
-public class GenericInventory : MonoBehaviour, IDropHandler
+public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public List<ItemInvEntry> items;
     public GameObject itemGraphicsPrefab;
     public Transform graphicsParent;
+    public GameObject placeHelper;
     private Vector2Int inventorySize;
     private bool[,] slotsOccupancy;
+    private bool isCursorOver;
+
+    public static ItemInvEntry currentlyDraggedItem;
 
     private void Awake()
     {
@@ -67,7 +72,7 @@ public class GenericInventory : MonoBehaviour, IDropHandler
         if (isSpaceFree(item.position, item.itemData.size))
         {
             RectTransform itemRectTransform = item.UIgameObject.GetComponent<RectTransform>();
-            itemRectTransform.parent = gameObject.transform;
+            itemRectTransform.SetParent(gameObject.transform);
             itemRectTransform.anchoredPosition = new Vector2(item.position.x * 75, item.position.y * -75);
             item.UIgameObject.GetComponent<InvItemUIButton>().OnPickup += RemoveItem;
             item.UIgameObject.GetComponent<InvItemUIButton>().currentInv = this;
@@ -97,8 +102,10 @@ public class GenericInventory : MonoBehaviour, IDropHandler
         ItemInvEntry item = new ItemInvEntry();
         item.itemData = itemData;
         item.position = new Vector2Int(Random.Range(0, 8), Random.Range(0, 8));
+        item.count = Random.Range(1, 999);
 
         item.UIgameObject = Instantiate(itemGraphicsPrefab, graphicsParent);
+        item.UIgameObject.name = string.Format("{0}x{1}", itemData.name, item.count);
         item.UIgameObject.GetComponent<InvItemUIButton>().myEntry = item;
         item.UIgameObject.GetComponent<InvItemUIButton>().UpdateUI();
         if (!AddItem(item))
@@ -107,6 +114,8 @@ public class GenericInventory : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (!eventData.pointerDrag.GetComponent<InvItemUIButton>())
+            return;
         ItemInvEntry itemEntry = eventData.pointerDrag.GetComponent<InvItemUIButton>().myEntry;
         Vector2 localPoint;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), eventData.position, null, out localPoint);
@@ -119,5 +128,33 @@ public class GenericInventory : MonoBehaviour, IDropHandler
             itemEntry.position = lastPos;
             eventData.pointerDrag.GetComponent<InvItemUIButton>().ReturnToPrevInv();
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        isCursorOver = true;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        isCursorOver = false;
+    }
+
+    private void Update()
+    {
+        if (isCursorOver && currentlyDraggedItem!= null && EventSystem.current.IsPointerOverGameObject())
+        {
+            //Debug.LogFormat("Yup, currentlyDraggedItem: {0}", currentlyDraggedItem.UIgameObject.name);
+            Vector2 localPoint;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), Input.mousePosition, null, out localPoint);
+            Vector2Int desiredSlot = new Vector2Int((int)localPoint.x / 75, -(int)localPoint.y / 75);
+            placeHelper.GetComponent<RectTransform>().sizeDelta = currentlyDraggedItem.itemData.size * 75;
+            placeHelper.GetComponent<RectTransform>().anchoredPosition = new Vector2(desiredSlot.x * 75, desiredSlot.y * -75);
+            if (isSpaceFree(desiredSlot, currentlyDraggedItem.itemData.size))
+                placeHelper.GetComponent<Image>().color = Color.green;
+            else
+                placeHelper.GetComponent<Image>().color = Color.red;
+        }
+        placeHelper.SetActive(isCursorOver && currentlyDraggedItem != null);
     }
 }

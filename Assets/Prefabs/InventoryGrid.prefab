@@ -239,3 +239,4 @@ MonoBehaviour:
   itemGraphicsPrefab: {fileID: 951589702156042786, guid: 021d655d0c21b604d820d4e10a64da6d,
     type: 3}
   graphicsParent: {fileID: 2343718695432043347}
+  placeHelper: {fileID: 2343718694965991470}
