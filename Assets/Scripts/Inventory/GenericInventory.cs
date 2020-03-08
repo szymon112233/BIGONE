@@ -84,6 +84,8 @@ public class GenericInventory : MonoBehaviour, IDropHandler
         {
             items.Remove(item);
             MarkSlotsOccupied(item.position, item.itemData.size, false);
+            item.UIgameObject.GetComponent<InvItemUIButton>().currentInv = null;
+            item.UIgameObject.GetComponent<InvItemUIButton>().prevInv = this;
             item.UIgameObject.GetComponent<InvItemUIButton>().OnPickup -= RemoveItem;
 
         }
@@ -115,7 +117,7 @@ public class GenericInventory : MonoBehaviour, IDropHandler
         if (!AddItem(itemEntry))
         {
             itemEntry.position = lastPos;
-            eventData.pointerDrag.GetComponent<InvItemUIButton>().currentInv.AddItem(itemEntry);
+            eventData.pointerDrag.GetComponent<InvItemUIButton>().ReturnToPrevInv();
         }
     }
 }

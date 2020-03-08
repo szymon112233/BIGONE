@@ -8,13 +8,12 @@ public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBe
 {
     public ItemInvEntry myEntry;
     public GenericInventory currentInv;
+    public GenericInventory prevInv;
 
     public RectTransform rectTransform;
     public CanvasGroup canvasGroup;
     public Image graphics;
     public Text countText;
-
-    private Vector3 lastPos;
 
     public System.Action<ItemInvEntry> OnPickup;
     public System.Action<ItemInvEntry> OnDrop;
@@ -26,9 +25,10 @@ public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBe
         rectTransform.sizeDelta = new Vector2(myEntry.itemData.size.x * 75, myEntry.itemData.size.y * 75);
     }
 
-    private void Start()
+    public void ReturnToPrevInv()
     {
-        lastPos = new Vector3();
+        if (prevInv)
+            prevInv.AddItem(myEntry);
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -39,12 +39,13 @@ public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBe
     public void OnEndDrag(PointerEventData eventData)
     {
         canvasGroup.blocksRaycasts = true;
+        if (currentInv == null)
+            ReturnToPrevInv();
         OnDrop?.Invoke(myEntry);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        lastPos = transform.position;
         canvasGroup.blocksRaycasts = false;
         if (OnPickup != null)
             OnPickup(myEntry);
