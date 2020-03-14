@@ -9,8 +9,8 @@ public class ItemInvEntry
 {
     public GenericInvItem itemData = null;
     public int count = 1;
-    public bool isHorizontal = true;
     public Vector2Int position = new Vector2Int();
+    public Vector2Int currentInvSize = new Vector2Int();
     public GameObject UIgameObject;
 }
 
@@ -66,17 +66,17 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
         Debug.LogFormat("Trying to add a new item to inventory at:({0},{1}), size:({2},{3})",
             item.position.x, 
             item.position.y, 
-            item.itemData.size.x, 
-            item.itemData.size.y);
+            item.currentInvSize.x, 
+            item.currentInvSize.y);
 
-        if (isSpaceFree(item.position, item.itemData.size))
+        if (isSpaceFree(item.position, item.currentInvSize))
         {
             RectTransform itemRectTransform = item.UIgameObject.GetComponent<RectTransform>();
             itemRectTransform.SetParent(gameObject.transform);
             itemRectTransform.anchoredPosition = new Vector2(item.position.x * 75, item.position.y * -75);
             item.UIgameObject.GetComponent<InvItemUIButton>().OnPickup += RemoveItem;
             item.UIgameObject.GetComponent<InvItemUIButton>().currentInv = this;
-            MarkSlotsOccupied(item.position, item.itemData.size);
+            MarkSlotsOccupied(item.position, item.currentInvSize);
             items.Add(item);
             return true;
         }
@@ -88,7 +88,7 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
         if (items.Contains(item))
         {
             items.Remove(item);
-            MarkSlotsOccupied(item.position, item.itemData.size, false);
+            MarkSlotsOccupied(item.position, item.currentInvSize, false);
             item.UIgameObject.GetComponent<InvItemUIButton>().currentInv = null;
             item.UIgameObject.GetComponent<InvItemUIButton>().prevInv = this;
             item.UIgameObject.GetComponent<InvItemUIButton>().OnPickup -= RemoveItem;
@@ -101,13 +101,13 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
         GenericInvItem itemData = Globals.Instance.itemDatabase.items[Random.Range(0, Globals.Instance.itemDatabase.items.Count)];
         ItemInvEntry item = new ItemInvEntry();
         item.itemData = itemData;
+        item.currentInvSize = itemData.size;
         item.position = new Vector2Int(Random.Range(0, 8), Random.Range(0, 8));
         item.count = Random.Range(1, 999);
 
         item.UIgameObject = Instantiate(itemGraphicsPrefab, graphicsParent);
-        item.UIgameObject.name = string.Format("{0}x{1}", itemData.name, item.count);
         item.UIgameObject.GetComponent<InvItemUIButton>().myEntry = item;
-        item.UIgameObject.GetComponent<InvItemUIButton>().UpdateUI();
+        item.UIgameObject.GetComponent<InvItemUIButton>().InitUI();
         if (!AddItem(item))
             Destroy(item.UIgameObject);
     }
@@ -148,9 +148,9 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
             Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(GetComponent<RectTransform>(), Input.mousePosition, null, out localPoint);
             Vector2Int desiredSlot = new Vector2Int((int)localPoint.x / 75, -(int)localPoint.y / 75);
-            placeHelper.GetComponent<RectTransform>().sizeDelta = currentlyDraggedItem.itemData.size * 75;
+            placeHelper.GetComponent<RectTransform>().sizeDelta = currentlyDraggedItem.currentInvSize * 75;
             placeHelper.GetComponent<RectTransform>().anchoredPosition = new Vector2(desiredSlot.x * 75, desiredSlot.y * -75);
-            if (isSpaceFree(desiredSlot, currentlyDraggedItem.itemData.size))
+            if (isSpaceFree(desiredSlot, currentlyDraggedItem.currentInvSize))
                 placeHelper.GetComponent<Image>().color = Color.green;
             else
                 placeHelper.GetComponent<Image>().color = Color.red;

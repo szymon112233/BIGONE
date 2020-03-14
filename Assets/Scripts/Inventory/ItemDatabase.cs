@@ -6,4 +6,5 @@ using UnityEngine;
 public class ItemDatabase : ScriptableObject
 {
     public List<GenericInvItem> items;
+    public List<ContainerInvItem> containerItems;
 }
