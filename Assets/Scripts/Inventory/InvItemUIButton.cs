@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
+public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler, IPointerClickHandler
 {
     public ItemInvEntry myEntry;
     public GenericInventory currentInv;
@@ -20,6 +21,7 @@ public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBe
     public System.Action<ItemInvEntry> OnDrop;
 
     bool isDragged;
+    private float lastClickTime;
 
     private void Awake()
     {
@@ -108,5 +110,46 @@ public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBe
         isDragged = true;
         if (OnPickup != null)
             OnPickup(myEntry);
+    }
+
+    void OnSingleClick()
+    {
+        Debug.Log("Single click!");
+    }
+
+
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        float clickTimeDelta = eventData.clickTime - lastClickTime;
+        lastClickTime = eventData.clickTime;
+
+        Debug.LogFormat("clickTimeDelta: {0}, clickCount: {1}", clickTimeDelta, eventData.clickCount);
+        if (/*eventData.clickCount >= 2 && */clickTimeDelta < 0.55f)
+        {
+            OnDoubleClick();
+        }
+        else
+        {
+            OnSingleClick();
+        }
+    }
+
+    private void OnDoubleClick()
+    {
+
+        Debug.Log("Double Click");
+        if (myEntry.itemData.GetType() == typeof(ContainerInvItem))
+        {
+            OpenMyInventory();
+        }
+    }
+
+    private void OpenMyInventory()
+    {
+        GameObject go = Instantiate(Globals.Instance.InventoryTemplatePrefab);
+        ContainerInvItem containerInfo = (ContainerInvItem)myEntry.itemData;
+        GenericInventory inv = go.GetComponent<GenericInventory>();
+        inv.Init(containerInfo.myInvSize, true);
     }
 }

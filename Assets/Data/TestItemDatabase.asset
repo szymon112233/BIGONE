@@ -75,3 +75,24 @@ MonoBehaviour:
     <Stackable>k__BackingField: 0
     <maxStackSize>k__BackingField: 0
     myInvSize: {x: 3, y: 3}
+  - name: Sack
+    id: 10
+    sprite: {fileID: 21300000, guid: eceed07ce54cccc409c4bb58b3a4e576, type: 3}
+    size: {x: 1, y: 1}
+    <Stackable>k__BackingField: 0
+    <maxStackSize>k__BackingField: 0
+    myInvSize: {x: 2, y: 1}
+  - name: SackBetter
+    id: 11
+    sprite: {fileID: 21300000, guid: 382f79ad96111494788a610f8d8a477f, type: 3}
+    size: {x: 1, y: 1}
+    <Stackable>k__BackingField: 0
+    <maxStackSize>k__BackingField: 0
+    myInvSize: {x: 2, y: 2}
+  - name: Backpack
+    id: 12
+    sprite: {fileID: 21300000, guid: b429da4a8b05dac4fae4a9071b7ab071, type: 3}
+    size: {x: 3, y: 3}
+    <Stackable>k__BackingField: 0
+    <maxStackSize>k__BackingField: 0
+    myInvSize: {x: 3, y: 4}

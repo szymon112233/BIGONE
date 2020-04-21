@@ -15,5 +15,13 @@ public class InventoryGridEditor : Editor
         {
             myScript.AddRandomItem();
         }
+        if (GUILayout.Button("Spawn random generic item"))
+        {
+            myScript.AddCategoryRandomItem<GenericInvItem>();
+        }
+        if (GUILayout.Button("Spawn random container item"))
+        {
+            myScript.AddCategoryRandomItem<ContainerInvItem>();
+        }
     }
 }

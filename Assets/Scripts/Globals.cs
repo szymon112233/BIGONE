@@ -5,4 +5,5 @@ using UnityEngine;
 public class Globals : Singleton<Globals>
 {
     public ItemDatabase itemDatabase;
+    public GameObject InventoryTemplatePrefab;
 }
