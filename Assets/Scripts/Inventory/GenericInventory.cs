@@ -12,6 +12,7 @@ public class ItemInvEntry
     public Vector2Int position = new Vector2Int();
     public Vector2Int currentInvSize = new Vector2Int();
     public GameObject UIgameObject;
+    public int myInvKey = -1;
 }
 
 [System.Serializable]
@@ -19,7 +20,6 @@ public class InventorySerializableData
 {
     public Vector2Int size;
     public List<ItemInvEntry> items;
-    public bool[,] slotsOccupancy;
 }
 
 public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
@@ -30,10 +30,12 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
     public RectTransform borderRectTransform;
     public RectTransform backgroundRectTransform;
     public RectTransform gridRectTransform;
+    public ItemInvEntry myOwningContainerItem;
     public GameObject placeHelper;
     public GameObject closeButton;
     public Vector2Int inventorySize;
     public bool closable;
+    public bool movable;
     private bool[,] slotsOccupancy;
     private bool isCursorOver;
 
@@ -41,13 +43,25 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
 
     private void Awake()
     {
-        Init(inventorySize, closable);
+        Init(inventorySize, Vector2.zero, null, closable, movable);
+        borderRectTransform.GetComponent<DragUtilityWrapper>().OnDragEvent += onDrag;
+
     }
 
-    public void Init(Vector2Int size, bool closable = false)
+    private void OnDestroy() 
+    {
+        borderRectTransform.GetComponent<DragUtilityWrapper>().OnDragEvent -= onDrag;
+    }
+
+    public void Init(Vector2Int size,Vector2 position, ItemInvEntry creator = null, bool closable = false, bool movable = false)
     {
         inventorySize = size;
+        if (position != Vector2.zero)
+        graphicsParent.position = position;
+        if (creator != null)
+            myOwningContainerItem = creator;
         this.closable = closable;
+        this.movable = movable;
         ClearItems();
         closeButton.SetActive(closable);
         graphicsParent.sizeDelta = new Vector2(size.x * 75, size.y * 75);
@@ -63,19 +77,25 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
         slotsOccupancy = new bool[inventorySize.x, inventorySize.y];
     }
 
-    public bool LoadInventory(InventorySerializableData entries)
+    public bool LoadInventory(int invKey)
     {
-        if (entries == null)
+        InventorySerializableData data;
+        if (!Globals.Instance.inventorySaveDataManager.GetInventory(invKey, out data))
             return false;
+        inventorySize = data.size;
+        foreach (ItemInvEntry item in data.items)
+        {
+            if (!CreateItem(item))
+                return false;
+        }
         return true;
     }
 
-    public InventorySerializableData SaveInventory()
+    public InventorySerializableData SerializeInventory()
     {
         InventorySerializableData data = new InventorySerializableData();
         data.items = items;
         data.size = inventorySize;
-        data.slotsOccupancy = slotsOccupancy;
 
         return data;
     }
@@ -143,6 +163,21 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
         }
     }
 
+    bool CreateItem(ItemInvEntry item)
+    {
+        item.UIgameObject = Instantiate(itemGraphicsPrefab, graphicsParent);
+        item.UIgameObject.GetComponent<InvItemUIButton>().myEntry = item;
+        item.UIgameObject.GetComponent<InvItemUIButton>().InitUI();
+        if (AddItem(item))
+        {
+            return true;
+        }
+        else
+        {
+            Destroy(item.UIgameObject);
+            return false;
+        }
+    }
 
     public void AddRandomItem()
     {
@@ -185,6 +220,14 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
 
     public void CloseInventoryWindow()
     {
+        if (myOwningContainerItem.myInvKey != -1)
+        {
+            Globals.Instance.inventorySaveDataManager.SaveInventory(myOwningContainerItem.myInvKey, SerializeInventory(), true);
+        }
+        else
+        {
+            myOwningContainerItem.myInvKey = Globals.Instance.inventorySaveDataManager.SaveNewInventory(SerializeInventory());
+        }
         GameObject.Destroy(gameObject);
     }
 
@@ -232,6 +275,12 @@ public class GenericInventory : MonoBehaviour, IDropHandler, IPointerEnterHandle
                 placeHelper.GetComponent<Image>().color = Color.red;
         }
         placeHelper.SetActive(isCursorOver && currentlyDraggedItem != null);
+    }
+
+    private void onDrag(PointerEventData eventData)
+    {
+        if (movable)
+            graphicsParent.position = Input.mousePosition;
     }
 
 }

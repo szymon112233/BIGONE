@@ -16,6 +16,7 @@ public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBe
     public Image graphics;
     public TMPro.TextMeshProUGUI countText;
     public Canvas dragCanvas;
+    public GameObject myInventoryGO;
 
     public System.Action<ItemInvEntry> OnPickup;
     public System.Action<ItemInvEntry> OnDrop;
@@ -147,9 +148,13 @@ public class InvItemUIButton : MonoBehaviour, IDragHandler, IEndDragHandler, IBe
 
     private void OpenMyInventory()
     {
-        GameObject go = Instantiate(Globals.Instance.InventoryTemplatePrefab);
-        ContainerInvItem containerInfo = (ContainerInvItem)myEntry.itemData;
-        GenericInventory inv = go.GetComponent<GenericInventory>();
-        inv.Init(containerInfo.myInvSize, true);
+        if (myInventoryGO == null)
+        {
+            myInventoryGO = Instantiate(Globals.Instance.InventoryTemplatePrefab);
+            ContainerInvItem containerInfo = (ContainerInvItem)myEntry.itemData;
+            GenericInventory inv = myInventoryGO.GetComponent<GenericInventory>();
+            inv.Init(containerInfo.myInvSize, Input.mousePosition, myEntry, true, true);    
+            inv.LoadInventory(myEntry.myInvKey);
+        }
     }
 }
